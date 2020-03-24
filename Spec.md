@@ -1,3 +1,21 @@
+1 finish sample marking script
+1 make script that downloads marked samples
+    1 check if marker song length matches downloaded song length
+1 make script that loads markers into ableton project
+    1 cycle albums, rank by my rating and how sparsely album was tagged
+    1 a ton of markers on one album won't clog if done right
+1 create sample tagging/trimming workflow
+    1 script to export clips
+1 create sample demoing workflow
+
+ezsample
+    marks samples, builds marked sample table
+music
+    downloads marked samples, manages track lib
+ableton
+    loads marked samples into ableton
+    exports files to sample library
+        as a result, indirectly manages sample library
 
 FILES
 ableton.py

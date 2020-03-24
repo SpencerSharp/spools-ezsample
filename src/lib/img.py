@@ -1,8 +1,6 @@
 from PIL import Image, ImageOps, ImageEnhance
 import time
-from event.py import Event
-
-
+from spools.ezsample import Event
 
 def should_scan(img):
     width, height = img.size
@@ -49,7 +47,7 @@ def should_add(img, metadata):
     if re.match(r'[\d]+:[\d]+',timestamp):
         add_image(img, metadata)
 
-def add_image(img, metadata):
+def get_img_event(img, metadata):
     mins = int(timestamp[:timestamp.find(':')])
     secs = int(timestamp[timestamp.find(':')+1:])
     secs += mins * 60
@@ -60,13 +58,13 @@ def add_image(img, metadata):
     artist_name = re.sub('- .*','',project_info)
     artist_name = re.sub('— .*','',artist_name)
 
-    event = Event(track_name, project_name, artist_name, ms, imgpath, False)
-    event.resolve()
+    return Event(track_name, project_name, artist_name, ms, imgpath, False)
 
-def try_add_image(imgpath):
+def get_event_from_image(imgpath):
     img = Image.open(imgpath.as_posix())
 
     if should_scan(img):
         metadata = scan_img(img)
         if should_add(img, metadata):
-            add_image(img, metadata)
+            return get_img_event(img, metadata)
+    return None

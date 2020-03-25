@@ -47,24 +47,28 @@
 #         return self.source == None
 
 import pandas as pd
+import os
+from pathlib import Path
 
 class ItemTable():
     def __init__(self, name):
-        self.file = Path(os.ENVIRON['SPOOLS_HOME']) / 'sps' / 'sample' / name
+        self.file = Path(os.environ['SPOOLS_HOME']) / 'sample' / name
         if not self.file.exists():
             pd.DataFrame().to_json(self.file)
 
-    def add(item):
+    def add(self, item):
         table = pd.read_json(self.file)
-        table = table.append(item.to_dict())
+        table = table.append(item.to_dict(),ignore_index=True)
         table.to_json(self.file)
 
-    def exists(item):
+    def exists(self, item):
         table = pd.read_json(self.file)
+        if len(table) == 0:
+            return False
         return len(table.loc[table['timestamp'] == item.timestamp]) > 0
 
 class Sample(object):
-    def __init__(track_name, artist_name, project_name, time_in_track, timestamp=None, img_path=None):
+    def __init__(self, track_name, artist_name, project_name, time_in_track, timestamp=None, img_path=None):
         # self.track = FileItem(self.track_name, self.artist_name, self.project_name)
         self.timestamp = timestamp
 
@@ -82,7 +86,7 @@ class Sample(object):
         self.table = ItemTable('events')
 
     # call at nighttime routine
-    def resolve():
+    def resolve(self):
         if self.table.exists(self):
             return
         if not self.track.is_saved():
@@ -90,19 +94,19 @@ class Sample(object):
         self.save()
 
     # call when event processing 
-    def save():
+    def save(self):
         if self.table.exists(self):
             return
         self.table.add(self)
     
-    def to_dict():
+    def to_dict(self):
         return {
             'timestamp': self.timestamp,
             'track_name': self.track_name,
             'artist_name': self.artist_name,
             'project_name': self.project_name,
             'time_in_track': self.time_in_track,
-            'img_path': self.img_path.as_posix(),
+            'img_path': self.img_path,
             'path': self.path,
             'source_path': self.source_path,
             'tags': self.tags
